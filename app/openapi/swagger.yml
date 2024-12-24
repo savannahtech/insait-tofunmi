@@ -1,0 +1,105 @@
+openapi: 3.0.0
+info:
+  title: AI Questions API
+  version: 1.0.0
+  description: API to handle user-submitted questions and AI-generated answers.
+paths:
+  /ask:
+    post:
+      summary: Ask a question and get an AI-generated answer
+      operationId: askQuestion
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionRequest'
+      responses:
+        '200':
+          description: Successfully generated answer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QuestionResponse'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /questions:
+    get:
+      summary: Get a paginated list of questions and answers
+      operationId: listQuestions
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Items per page
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A list of questions and answers
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  questions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/QuestionResponse'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+                  per_page:
+                    type: integer
+                  total_pages:
+                    type: integer
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    QuestionRequest:
+      type: object
+      properties:
+        question:
+          type: string
+          description: The question being asked
+    QuestionResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        question:
+          type: string
+        answer:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+    PaginationParams:
+      type: object
+      properties:
+        page:
+          type: integer
+        per_page:
+          type: integer
